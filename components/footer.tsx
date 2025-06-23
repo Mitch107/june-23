@@ -8,9 +8,9 @@ export function Footer() {
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">TC</span>
+                <span className="text-white font-bold text-sm">HC</span>
               </div>
-              <span className="text-xl font-bold">TuCupid</span>
+              <span className="text-xl font-bold">HolaCupid</span>
             </div>
             <p className="text-gray-400 text-sm">
               Connect with amazing people from the Dominican Republic. Safe, secure, and authentic connections.
@@ -26,17 +26,17 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/how-it-works" className="text-gray-400 hover:text-white">
+                <Link href="/#how-it-works" className="text-gray-400 hover:text-white">
                   How It Works
                 </Link>
               </li>
               <li>
-                <Link href="/pricing" className="text-gray-400 hover:text-white">
-                  Pricing
+                <Link href="/submit-profile" className="text-gray-400 hover:text-white">
+                  Submit Profile
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="text-gray-400 hover:text-white">
+                <Link href="/help" className="text-gray-400 hover:text-white">
                   FAQ
                 </Link>
               </li>
@@ -97,7 +97,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-          <p>&copy; 2024 TuCupid. All rights reserved.</p>
+          <p>&copy; 2024 HolaCupid. All rights reserved.</p>
         </div>
       </div>
     </footer>

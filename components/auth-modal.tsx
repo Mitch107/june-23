@@ -13,8 +13,8 @@ import { X } from "lucide-react"
 interface AuthModalProps {
   isOpen: boolean
   onClose: () => void
-  onLogin: (email: string, password: string) => void
-  onRegister: (email: string, password: string, name: string) => void
+  onLogin: (email: string, password: string) => Promise<{ error: any } | void>
+  onRegister: (email: string, password: string, name: string) => Promise<{ error: any } | void>
 }
 
 export function AuthModal({ isOpen, onClose, onLogin, onRegister }: AuthModalProps) {
@@ -27,24 +27,42 @@ export function AuthModal({ isOpen, onClose, onLogin, onRegister }: AuthModalPro
 
   if (!isOpen) return null
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    onLogin(loginEmail, loginPassword)
-    setLoginEmail("")
-    setLoginPassword("")
+    try {
+      const { error } = await onLogin(loginEmail, loginPassword)
+      if (error) {
+        alert(`Login failed: ${error.message || error}`)
+        return
+      }
+      // Success - modal will be closed by parent component
+      setLoginEmail("")
+      setLoginPassword("")
+    } catch (error: any) {
+      alert(`Login failed: ${error.message || "Unknown error"}`)
+    }
   }
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     if (registerPassword !== confirmPassword) {
       alert("Passwords don't match")
       return
     }
-    onRegister(registerEmail, registerPassword, registerName)
-    setRegisterName("")
-    setRegisterEmail("")
-    setRegisterPassword("")
-    setConfirmPassword("")
+    try {
+      const { error } = await onRegister(registerEmail, registerPassword, registerName)
+      if (error) {
+        alert(`Registration failed: ${error.message || error}`)
+        return
+      }
+      // Success - modal will be closed by parent component
+      setRegisterName("")
+      setRegisterEmail("")
+      setRegisterPassword("")
+      setConfirmPassword("")
+    } catch (error: any) {
+      alert(`Registration failed: ${error.message || "Unknown error"}`)
+    }
   }
 
   return (
@@ -54,7 +72,7 @@ export function AuthModal({ isOpen, onClose, onLogin, onRegister }: AuthModalPro
           <Button variant="ghost" size="sm" className="absolute right-2 top-2" onClick={onClose}>
             <X className="w-4 h-4" />
           </Button>
-          <CardTitle className="text-center">Welcome to TuCupid</CardTitle>
+          <CardTitle className="text-center">Welcome to HolaCupid</CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="login" className="w-full">

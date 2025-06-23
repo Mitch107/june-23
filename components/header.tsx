@@ -9,12 +9,15 @@ import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/hooks/use-cart"
 import { useAuth } from "@/hooks/use-auth"
 import { AuthModal } from "@/components/auth-modal"
+import { useFavorites } from "@/hooks/use-favorites"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const { items } = useCart()
-  const { user, logout, login, register } = useAuth()
+  const { user, signOut, signIn, signUp, loading } = useAuth()
+  const { favorites } = useFavorites()
+  const favoritesCount = favorites?.length || 0
 
   const scrollToHowItWorks = () => {
     const element = document.getElementById("how-it-works")
@@ -23,19 +26,31 @@ export function Header() {
     }
   }
 
-  const handleLogin = (email: string, password: string) => {
-    if (login(email, password)) {
-      setShowAuthModal(false)
-    } else {
-      alert("Invalid credentials")
+  const handleLogin = async (email: string, password: string) => {
+    try {
+      const { error } = await signIn(email, password)
+      if (!error) {
+        setShowAuthModal(false)
+        return { error: null }
+      } else {
+        return { error }
+      }
+    } catch (error) {
+      return { error }
     }
   }
 
-  const handleRegister = (email: string, password: string, name: string) => {
-    if (register(email, password, name)) {
-      setShowAuthModal(false)
-    } else {
-      alert("Registration failed")
+  const handleRegister = async (email: string, password: string, name: string) => {
+    try {
+      const { error } = await signUp(email, password, name)
+      if (!error) {
+        setShowAuthModal(false)
+        return { error: null }
+      } else {
+        return { error }
+      }
+    } catch (error) {
+      return { error }
     }
   }
 
@@ -47,9 +62,9 @@ export function Header() {
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">TC</span>
+                <span className="text-white font-bold text-sm">HC</span>
               </div>
-              <span className="text-xl font-bold text-gray-900">TuCupid</span>
+              <span className="text-xl font-bold text-gray-900">HolaCupid</span>
             </Link>
 
             {/* Search Bar - Desktop */}
@@ -68,17 +83,28 @@ export function Header() {
               <button onClick={scrollToHowItWorks} className="text-gray-700 hover:text-pink-600 transition-colors">
                 How It Works
               </button>
-              <Link href="/contact" className="text-gray-700 hover:text-pink-600 transition-colors">
-                Contact
+              {/* Favorites link in main nav */}
+              <Link href="/favorites" className="text-gray-700 hover:text-pink-600 transition-colors relative">
+                Favorites
+                {favoritesCount > 0 && (
+                  <Badge className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs min-w-[18px] h-4 flex items-center justify-center rounded-full">
+                    {favoritesCount}
+                  </Badge>
+                )}
+              </Link>
+              <Link href="/submit-profile">
+                <Button variant="outline" size="sm">
+                  + Submit Profile
+                </Button>
               </Link>
             </nav>
 
-            {/* User Actions */}
+            {/* User Actions - NO ADMIN BUTTON */}
             <div className="flex items-center space-x-4">
               {user ? (
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600">Hi, {user.name}</span>
-                  <Button variant="ghost" size="sm" onClick={logout}>
+                  <span className="text-sm text-gray-600">Hi, {user.email}</span>
+                  <Button variant="ghost" size="sm" onClick={signOut}>
                     <LogOut className="w-4 h-4" />
                   </Button>
                 </div>
@@ -89,11 +115,13 @@ export function Header() {
                 </Button>
               )}
 
-              <Link href="/cart">
-                <Button variant="outline" size="sm" className="relative">
-                  <ShoppingCart className="w-4 h-4" />
+              {/* Cart button - ALWAYS SHOWS QUANTITY */}
+              <Link href="/cart" className="relative">
+                <Button variant="outline" size="sm" className="relative bg-pink-50 border-pink-200 hover:bg-pink-100">
+                  <ShoppingCart className="w-4 h-4 text-pink-600" />
+                  <span className="ml-2 text-pink-600">Cart</span>
                   {items.length > 0 && (
-                    <Badge className="absolute -top-2 -right-2 w-5 h-5 rounded-full p-0 flex items-center justify-center text-xs">
+                    <Badge className="absolute -top-2 -right-2 w-5 h-5 rounded-full p-0 flex items-center justify-center text-xs bg-pink-500">
                       {items.length}
                     </Badge>
                   )}
@@ -124,8 +152,14 @@ export function Header() {
                 >
                   How It Works
                 </button>
-                <Link href="/contact" className="text-gray-700 hover:text-pink-600 transition-colors">
-                  Contact
+                {/* Favorites in mobile menu */}
+                <Link href="/favorites" className="text-gray-700 hover:text-pink-600 transition-colors">
+                  Favorites {favoritesCount > 0 && `(${favoritesCount})`}
+                </Link>
+                <Link href="/submit-profile">
+                  <Button variant="outline" size="sm">
+                    + Submit Profile
+                  </Button>
                 </Link>
               </div>
             </div>
